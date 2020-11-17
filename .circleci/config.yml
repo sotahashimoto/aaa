@@ -1,6 +1,8 @@
+# CircleCIのバージョン
 version: 2
 jobs:
   build:
+    # docker / machine / macos のいずれかをconfig.ymlに記載する必要がある
     docker:
     - image: circleci/ruby:2.5.7-node-browsers
       environment:
@@ -29,7 +31,7 @@ jobs:
     - run:
         name: install dependencies
         command: |
-          gem install bundler -v 2.1.4
+          gem install bundler:2.1.4
           bundle install --jobs=4 --retry=3 --path vendor/bundle
     - save_cache:
         paths:
@@ -64,14 +66,3 @@ jobs:
     - store_artifacts:
         path: /tmp/test-results
         destination: test-results
-
-    - add_ssh_keys:
-          fingerprints:
-            - "a6:7c:09:f6:78:76:0e:59:32:23:78:c5:9b:a0:de:c9"
-    - deploy:
-          name: Capistrano deploy
-          command: |
-            if [ "${CIRCLE_BRANCH}" != "master" ]; then
-              exit 0
-            fi
-            bundle exec cap production deploy
